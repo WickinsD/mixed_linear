@@ -153,3 +153,6 @@ graphic <- bmd_wide |>
   dplyr::select(`1`,`2`,`3`)
 
 ggpairs(graphic, lower = list(continuous = "smooth"))
+
+ggpairs(bmd_wide, mapping = aes(colour = Group), columns = 3:5,
+        lower = list(continuous = "smooth"))
