@@ -21,7 +21,9 @@ pacman::p_load(
   multcomp,
   geepack,
   ggeffects,
-  gt
+  gt,
+  Epi,           
+  tidy 
 )
 
 
@@ -55,6 +57,8 @@ bmd_long <- drop_na(bmd_long)
 # Now check
 bmd_long |> nrow()
 
+glimpse(bmd_long)
+
 # Now we will do some exploratory data analysis.
 
 ### MEAN BMD over time ####
@@ -77,20 +81,25 @@ group_by(bmd_long, Time, Group) |>
 # Control group.
 
 # Now let's compare visually
-ggplot(bmd_long, aes(x = interaction(Group, Time), y = BMD, fill = Group)) +
+jittered_plot <- ggplot(bmd_long, aes(x = interaction(Group, Time), y = BMD, fill = Group)) +
   geom_boxplot() +
   geom_jitter(width = 0.2) +
   guides(fill = "none") +
-  labs(x = "", y = "BMD")
+  labs(x = "", y = "BMD") +
+  theme_minimal()
+
+ggsave(jittered_plot, filename = "outputs/jittered_plot.png", bg = "white")
 
 
 # What if we remove the interaction term and just put Time, then leave the fill 
 # for differentiating Group?
-ggplot(bmd_long, aes(x = Time, y = BMD, fill = Group)) +
+jittered_two <- ggplot(bmd_long, aes(x = Time, y = BMD, fill = Group)) +
   geom_boxplot() +
   geom_jitter(width = 0.2) +
   #guides(fill = "none") 
   labs(x = "", y = "BMD")
+
+ggsave(jittered_two, filename = "outputs/jittered_two.png", bg = "white")
 
 # Could also do this without the jitter
 ggplot(bmd_long, aes(x = Time, y = BMD, fill = Group)) +
@@ -156,3 +165,40 @@ ggpairs(graphic, lower = list(continuous = "smooth"))
 
 ggpairs(bmd_wide, mapping = aes(colour = Group), columns = 3:5,
         lower = list(continuous = "smooth"))
+
+# The review page by Alessio Crippa discusses many further plots which
+# can be employed, here we seek to move on to the research question.
+
+##RESEARCH QUESTION --
+# Does bone density differ between those receiving treatment and those 
+# not receiving treatment? If so, does the density differ between the two 
+# groups over time? i.e is there an interaction between 'Group' and 'Time'?
+
+# In essence, we seek to understand:
+# 1. Time effect
+# 2. Group effect.
+# 3. Interaction between time and group.
+
+
+# Start with the empty model. 
+# In this case we model the fixed effect, comprising Beta0, which is the
+# intercept of the whole model, u0i which is the random effect of each 
+# individual subject ('id'), and the error term. The random effect is 
+# independent of the error term.
+
+# Use the lmer function from within the lme4 package, referencing Crippa 2022.
+lin_0 <- lmer(BMD ~ 1 + (1 | id), data = bmd_long)
+summary(lin_0)
+
+
+# Now the marginal mean with confidence intervals.
+ci.lin(lin_0)
+
+# The estimated marginal mean of bmd is 0.8559264.
+# This has an estimated between-subject variability of 0.00016330.
+# The estimated variance of the error term is 0.0008778. 
+# Thus, the correlation between any two repeated measures (ICC) is equal
+# to 0.0016330/(0.0016330 + 0.0008778) = 0.6503903138.
+
+# We check variance components using 'ranova' - which is within the lmer test.
+ranova(lin_0)
