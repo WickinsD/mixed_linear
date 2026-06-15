@@ -1,3 +1,3 @@
 ## README
 
-This is a project exploring Mixed Linear MOdels in R.
+This is a project exploring Mixed Linear Models in R.
