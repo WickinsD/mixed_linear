@@ -202,3 +202,20 @@ ci.lin(lin_0)
 
 # We check variance components using 'ranova' - which is within the lmer test.
 ranova(lin_0)
+# See that the Chi-square statistic from the LRT on 1 DF is 70.3, which far 
+# exceeds significance. This supports the alternative hypothesis of between-
+# subject heterogeneity - i.e. subject ID is an important explanatory 
+# variable.
+
+# Graphical representation of the model--
+ggplot(bmd_long, aes(id, BMD)) +
+  geom_point(aes(col = Time, shape = Time)) +
+  geom_point(data = group_by(bmd_long, id) |>
+               summarise(BMD = mean(BMD), .groups = "drop"),
+             aes(col = "Mean", shape = "Mean"), size = 2.5) +
+  geom_hline(yintercept = mean(bmd_long$BMD)) +
+  labs(x = "Subject id", y = "BMD", col = "Time", shape = "Time")
+
+# Actually a fairly hard to read plot.
+
+
