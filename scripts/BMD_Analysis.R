@@ -88,6 +88,8 @@ jittered_plot <- ggplot(bmd_long, aes(x = interaction(Group, Time), y = BMD, fil
   labs(x = "", y = "BMD") +
   theme_minimal()
 
+jittered_plot
+
 ggsave(jittered_plot, filename = "outputs/jittered_plot.png", bg = "white")
 
 
@@ -114,6 +116,7 @@ group_by(bmd_long, Group, Time) |>
            geom_text(position = position_dodge(width = 0.9), vjust= 0.5) +
            coord_flip() +
            labs(x = "", y = "Mean BMD", fill = "")
+
 
 
 ##### CORRELATIONS ######
@@ -219,3 +222,15 @@ ggplot(bmd_long, aes(id, BMD)) +
 # Actually a fairly hard to read plot.
 
 
+# Time effect: Is the mean BMD varying with time?
+lin_1 <- lmer(BMD ~ Time + (1 | id), data = bmd_long)
+summary(lin_1)
+
+# The mean estimate of BMD at measure 1 is 0.839. The mean difference between 
+# BMD measure at TIme 2 comparted to time 1 is 0.003005, then between Time 3 
+# and Time 1 is 0.02341
+
+# The 'emmeans' function can here be used for computing marginal means over
+# measurement times with corresponding confidence intervals.
+
+tidy(emmeans(lin_1, "Time"), conf_int = TRUE)
