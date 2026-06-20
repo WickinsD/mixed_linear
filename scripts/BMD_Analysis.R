@@ -90,6 +90,8 @@ jittered_plot <- ggplot(bmd_long, aes(x = interaction(Group, Time), y = BMD, fil
 
 jittered_plot
 
+jittered_plot
+
 ggsave(jittered_plot, filename = "outputs/jittered_plot.png", bg = "white")
 
 
@@ -100,6 +102,8 @@ jittered_two <- ggplot(bmd_long, aes(x = Time, y = BMD, fill = Group)) +
   geom_jitter(width = 0.2) +
   #guides(fill = "none") 
   labs(x = "", y = "BMD")
+
+jittered_two
 
 ggsave(jittered_two, filename = "outputs/jittered_two.png", bg = "white")
 
