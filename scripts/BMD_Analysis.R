@@ -231,10 +231,36 @@ lin_1 <- lmer(BMD ~ Time + (1 | id), data = bmd_long)
 summary(lin_1)
 
 # The mean estimate of BMD at measure 1 is 0.839. The mean difference between 
-# BMD measure at TIme 2 comparted to time 1 is 0.003005, then between Time 3 
-# and Time 1 is 0.02341
+# BMD measure at TIme 2 compared to time 1 is 0.003005, then between Time 3 
+# and Time 1 is 0.02341. These last two outputs are Beta 1 and Beta 2 
+# coefficients respectively.
 
 # The 'emmeans' function can here be used for computing marginal means over
 # measurement times with corresponding confidence intervals.
 
 tidy(emmeans(lin_1, "Time"), conf_int = TRUE)
+
+# ANOVA --
+# Now use ANOVA to test whether mean BMD varies across time. i.e. the 
+# significance of Beta 1 and Beta 2 respectively in the marginal time 
+# model
+Anova(lin_1)
+
+# The results from the Wald test suggest that the effect of time is significant.
+
+## Group Effect --
+# Is the mean BMD varying between the treatment and control group?
+# E[Yij] = Beta0 + B1Xij1 where Xij1 is the indicator variable for treatment
+# 1 = Treatment 0 = Control
+
+lin_treatment <- lmer(BMD ~ Group + (1|id), data = bmd_long)
+summary(lin_treatment)
+anova(lin_treatment)
+
+# In both analyses, Group alone approaches significance. 
+
+# What about the interaction of time and group?
+
+lin_timetreatmentinter <- lmer(BMD ~ Time*Group + (1|id), data = bmd_long)
+summary(lin_timetreatmentinter)
+anova(lin_timetreatmentinter)
