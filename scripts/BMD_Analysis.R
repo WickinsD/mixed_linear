@@ -259,8 +259,18 @@ anova(lin_treatment)
 
 # In both analyses, Group alone approaches significance. 
 
-# What about the interaction of time and group?
+# What about the interaction of time and group? In other words, does the change
+# in BMD vary over time between treatment group and control group?
 
 lin_timetreatmentinter <- lmer(BMD ~ Time*Group + (1|id), data = bmd_long)
 summary(lin_timetreatmentinter)
 anova(lin_timetreatmentinter)
+
+# See from the anova that the Wald test detects strong evidence of an 
+# interaction between Time and Group.
+
+# Then the marginal prediction for combination of treatment and time
+tidy(emmeans(lin_timetreatmentinter, c("Time", "Group")), conf.int = TRUE)
+
+# Of if preferring to group by treatment group
+tidy(emmeans(lin_timetreatmentinter, c("Group", "Time")), conf.int = TRUE)
