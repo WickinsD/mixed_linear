@@ -248,6 +248,18 @@ Anova(lin_1)
 
 # The results from the Wald test suggest that the effect of time is significant.
 
+# Would be well worthwhile here performing a plot of the fitted data with 'Time'
+# as the parameter.
+time_fit <- bind_cols(
+  bmd_long, pred_bmd = predict(lin_1, re.form = ~0)
+)
+
+ggplot(time_fit, aes(Time, BMD)) +
+  geom_line(aes(group = factor(id))) +
+  geom_point(aes(y = pred_bmd), col = "red", size = 3) +
+  labs(x = "Measurement time", y = "BMD")
+
+# does work but a reasonably ugly plot!
 ## Group Effect --
 # Is the mean BMD varying between the treatment and control group?
 # E[Yij] = Beta0 + B1Xij1 where Xij1 is the indicator variable for treatment
